@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Numbers Assessment | Know Your Numbers!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0D1B2A;
+      --navy-mid: #1A2E42;
+      --gold: #C8A84B;
+      --gold-light: #E2C472;
+      --cream: #F7F4EE;
+      --cream-dark: #EDE9E0;
+      --text: #0D1B2A;
+      --text-muted: #5A6A7A;
+      --white: #FFFFFF;
+      --error: #C0392B;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+    }
+
+    /* ── LAYOUT ── */
+    .quiz-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quiz-header {
+      background: var(--navy);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garant', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .logo span { color: var(--white); font-weight: 400; font-style: italic; }
+
+    .progress-container {
+      flex: 1;
+      max-width: 340px;
+    }
+
+    .progress-label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 6px;
+      letter-spacing: 0.06em;
+    }
+
+    .progress-bar-bg {
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 2px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* ── QUIZ BODY ── */
+    .quiz-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+    }
+
+    .quiz-card {
+      background: var(--white);
+      max-width: 620px;
+      width: 100%;
+      padding: 56px 52px;
+      position: relative;
+      border: 1px solid var(--cream-dark);
+    }
+
+    .quiz-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+
+    /* ── STEP ── */
+    .step { display: none; }
+    .step.active { display: block; }
+
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateX(16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .step.active { animation: stepIn 0.3s ease forwards; }
+
+    .step-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .step-question {
+      font-family: 'Cormorant Garant', serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--navy);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .step-hint {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+
+    /* ── YES/NO BUTTONS ── */
+    .yn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .yn-btn {
+      padding: 20px;
+      border: 2px solid var(--cream-dark);
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.18s;
+      text-align: center;
+    }
+
+    .yn-btn:hover { border-color: var(--gold); background: var(--white); }
+    .yn-btn.selected-yes { border-color: var(--gold); background: var(--gold); color: var(--navy); font-weight: 600; }
+    .yn-btn.selected-no { border-color: var(--navy); background: var(--navy); color: var(--white); font-weight: 600; }
+
+    /* ── CHOICE BUTTONS ── */
+    .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+
+    .choice-btn {
+      padding: 16px 20px;
+      border: 2px solid var(--cream-dark);
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 400;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.18s;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .choice-btn::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--cream-dark);
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: all 0.18s;
+    }
+
+    .choice-btn:hover { border-color: var(--gold); background: var(--white); }
+    .choice-btn:hover::before { border-color: var(--gold); }
+
+    .choice-btn.selected {
+      border-color: var(--gold);
+      background: rgba(200,168,75,0.07);
+      font-weight: 500;
+    }
+
+    .choice-btn.selected::before {
+      border-color: var(--gold);
+      background: var(--gold);
+    }
+
+    /* ── FORM FIELDS ── */
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .form-label span { color: var(--error); margin-left: 2px; }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--cream-dark);
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      color: var(--text);
+      border-radius: 2px;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus { border-color: var(--gold); background: var(--white); }
+    .form-input.error { border-color: var(--error); }
+
+    .optional-tag {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-left: 6px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .error-msg {
+      font-size: 0.8rem;
+      color: var(--error);
+      margin-top: 6px;
+      display: none;
+    }
+
+    /* ── NAV BUTTONS ── */
+    .step-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover { color: var(--navy); }
+    .btn-back.hidden { visibility: hidden; }
+
+    .btn-next {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-next:hover { background: var(--gold); color: var(--navy); }
+    .btn-next:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-next:disabled:hover { background: var(--navy); color: var(--white); }
+
+    /* ── PRIVACY NOTE ── */
+    .privacy-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--cream-dark);
+    }
+
+    .privacy-note strong { color: var(--text); }
+
+    @media (max-width: 640px) {
+      .quiz-header { padding: 16px 20px; }
+      .quiz-card { padding: 36px 24px; }
+      .progress-container { max-width: 160px; }
+      .yn-group { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="quiz-wrapper">
+
+  <!-- HEADER -->
+  <header class="quiz-header">
+    <div class="logo">Know Your Numbers<span>!</span></div>
+    <div class="progress-container">
+      <div class="progress-label" id="progressLabel">Question 0 of 8</div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <main class="quiz-body">
+    <div class="quiz-card">
+
+      <!-- STEP 0: Contact Info -->
+      <div class="step active" id="step-0">
+        <div class="step-eyebrow">Before we start</div>
+        <h2 class="step-question">Where shall we send your results?</h2>
+        <p class="step-hint">Your personalised report will be ready the moment you finish. We'll never share your details or contact you more than once a month.</p>
+
+        <div class="form-group">
+          <label class="form-label" for="inputName">Your name <span>*</span></label>
+          <input class="form-input" type="text" id="inputName" placeholder="First name is fine" autocomplete="given-name" />
+          <div class="error-msg" id="nameError">Please enter your name</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inputEmail">Email address <span>*</span></label>
+          <input class="form-input" type="email" id="inputEmail" placeholder="you@yourbusiness.com" autocomplete="email" />
+          <div class="error-msg" id="emailError">Please enter a valid email address</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inputPhone">Phone number <span class="optional-tag">(optional)</span></label>
+          <input class="form-input" type="tel" id="inputPhone" placeholder="+44 7000 000000" autocomplete="tel" />
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back hidden">—</button>
+          <button class="btn-next" id="nextStep0">
+            Start the Assessment
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <div class="privacy-note">
+          <strong>Your data is safe.</strong> It will never be sold or shared with third parties. You'll receive your results immediately, and at most one useful email per month about our upcoming service.
+        </div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="step" id="step-1">
+        <div class="step-eyebrow">Question 1 of 5</div>
+        <h2 class="step-question">Do you know what your net profit was last month?</h2>
+        <p class="step-hint">Not roughly — could you give a confident, specific answer right now?</p>
+        <div class="yn-group">
+          <button class="yn-btn" data-q="1" data-val="yes">✓ &nbsp; Yes, I know it</button>
+          <button class="yn-btn" data-q="1" data-val="no">✗ &nbsp; No, not really</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" data-prev="0">← Back</button>
+          <button class="btn-next" id="nextStep1" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step" id="step-2">
+        <div class="step-eyebrow">Question 2 of 5</div>
+        <h2 class="step-question">Do you review your Profit &amp; Loss at least once a month?</h2>
+        <p class="step-hint">Sitting down and actually reading it — not just glancing at the bank balance.</p>
+        <div class="yn-group">
+          <button class="yn-btn" data-q="2" data-val="yes">✓ &nbsp; Yes, every month</button>
+          <button class="yn-btn" data-q="2" data-val="no">✗ &nbsp; No, not really</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" data-prev="1">← Back</button>
+          <button class="btn-next" id="nextStep2" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step" id="step-3">
+        <div class="step-eyebrow">Question 3 of 5</div>
+        <h2 class="step-question">Do you know the difference between profit and cash flow?</h2>
+        <p class="step-hint">Could you explain it clearly to someone else right now?</p>
+        <div class="yn-group">
+          <button class="yn-btn" data-q="3" data-val="yes">✓ &nbsp; Yes, clearly</button>
+          <button class="yn-btn" data-q="3" data-val="no">✗ &nbsp; Not really sure</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" data-prev="2">← Back</button>
+          <button class="btn-next" id="nextStep3" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step" id="step-4">
+        <div class="step-eyebrow">Question 4 of 5</div>
+        <h2 class="step-question">Do you know your three largest business expenses right now?</h2>
+        <p class="step-hint">Off the top of your head — no checking required.</p>
+        <div class="yn-group">
+          <button class="yn-btn" data-q="4" data-val="yes">✓ &nbsp; Yes, I know them</button>
+          <button class="yn-btn" data-q="4" data-val="no">✗ &nbsp; Not off the top of my head</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" data-prev="3">← Back</button>
+          <button class="btn-next" id="nextStep4" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step" id="step-5">
+        <div class="step-eyebrow">Question 5 of 5</div>
+        <h2 class="step-question">Has your accountant ever explained what your P&amp;L actually means for your business?</h2>
+        <p class="step-hint">Not just filed it — actually walked you through what it means and what to do about it.</p>
+        <div class="yn-group">
+          <button class="yn-btn" data-q="5" data-val="yes">✓ &nbsp; Yes, they have</button>
+          <button class="yn-btn" data-q="5" data-val="no">✗ &nbsp; No, never</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" data-prev="4">← Back</button>
+          <button class="btn-next" id="nextStep5" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 6: Qualifying Q1 -->
+      <div class="step" id="step-6">
+        <div class="step-eyebrow">Just a few more</div>
+        <h2 class="step-question">Which best describes your current business turnover?</h2>
+        <p class="step-hint">This helps us personalise your results.</p>
+        <div class="choices" id="choices-6">
+          <button class="choice-btn" data-q="6" data-val="pre-revenue">I'm pre-revenue or just getting started</button>
+          <button class="choice-btn" data-q="6" data-val="under-100k">Under £100k per year</button>
+          <button class="choice-btn" data-q="6" data-val="100k-500k">£100k – £500k per year</button>
+          <button class="choice-btn" data-q="6" data-val="over-500k">Over £500k per year</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" data-prev="5">← Back</button>
+          <button class="btn-next" id="nextStep6" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 7: Qualifying Q2 -->
+      <div class="step" id="step-7">
+        <div class="step-eyebrow">Almost there</div>
+        <h2 class="step-question">What's the single most important thing you want to achieve in the next 90 days?</h2>
+        <p class="step-hint">Be honest — there's no wrong answer here.</p>
+        <div class="choices" id="choices-7">
+          <button class="choice-btn" data-q="7" data-val="understand-numbers">Understand my numbers properly for the first time</button>
+          <button class="choice-btn" data-q="7" data-val="improve-profit">Improve my profit margin</button>
+          <button class="choice-btn" data-q="7" data-val="reduce-anxiety">Stop feeling anxious every time I look at my accounts</button>
+          <button class="choice-btn" data-q="7" data-val="track-money">Know exactly where my money is going each month</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" data-prev="6">← Back</button>
+          <button class="btn-next" id="nextStep7" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 8: Qualifying Q3 -->
+      <div class="step" id="step-8">
+        <div class="step-eyebrow">Last question</div>
+        <h2 class="step-question">What kind of support would suit you best?</h2>
+        <p class="step-hint">Think about what would actually fit into your life as a business owner.</p>
+        <div class="choices" id="choices-8">
+          <button class="choice-btn" data-q="8" data-val="monthly-report">A simple monthly report I can actually understand</button>
+          <button class="choice-btn" data-q="8" data-val="guided-walkthrough">Someone to walk me through my numbers each month</button>
+          <button class="choice-btn" data-q="8" data-val="self-serve">A tool I can use myself at any time</button>
+          <button class="choice-btn" data-q="8" data-val="coaching">Coaching to help me make better financial decisions</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" data-prev="7">← Back</button>
+          <button class="btn-next" id="nextStep8" disabled>See My Results →</button>
+        </div>
+      </div>
+
+    </div><!-- /.quiz-card -->
+  </main>
+
+</div><!-- /.quiz-wrapper -->
+
+<script>
+  // ── STATE ──
+  const state = {
+    name: '', email: '', phone: '',
+    answers: {}, // q1–q5: 'yes'|'no', q6–q8: value
+    currentStep: 0,
+    totalSteps: 8
+  };
+
+  // ── PROGRESS ──
+  function updateProgress() {
+    const step = state.currentStep;
+    const pct = step === 0 ? 0 : Math.round((step / state.totalSteps) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent =
+      step === 0 ? 'A few quick questions' : `Question ${step} of ${state.totalSteps}`;
+  }
+
+  // ── SHOW STEP ──
+  function goTo(stepNum) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + stepNum).classList.add('active');
+    state.currentStep = stepNum;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── CONTACT STEP ──
+  document.getElementById('nextStep0').addEventListener('click', () => {
+    const name = document.getElementById('inputName').value.trim();
+    const email = document.getElementById('inputEmail').value.trim();
+    let valid = true;
+
+    document.getElementById('nameError').style.display = 'none';
+    document.getElementById('emailError').style.display = 'none';
+    document.getElementById('inputName').classList.remove('error');
+    document.getElementById('inputEmail').classList.remove('error');
+
+    if (!name) {
+      document.getElementById('nameError').style.display = 'block';
+      document.getElementById('inputName').classList.add('error');
+      valid = false;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('emailError').style.display = 'block';
+      document.getElementById('inputEmail').classList.add('error');
+      valid = false;
+    }
+
+    if (valid) {
+      state.name = name;
+      state.email = email;
+      state.phone = document.getElementById('inputPhone').value.trim();
+      goTo(1);
+    }
+  });
+
+  // ── YES/NO BUTTONS ──
+  document.querySelectorAll('.yn-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = btn.dataset.q;
+      const val = btn.dataset.val;
+
+      // deselect siblings
+      btn.closest('.yn-group').querySelectorAll('.yn-btn').forEach(b => {
+        b.classList.remove('selected-yes', 'selected-no');
+      });
+
+      btn.classList.add(val === 'yes' ? 'selected-yes' : 'selected-no');
+      state.answers['q' + q] = val;
+
+      // enable next
+      const nextBtn = document.getElementById('nextStep' + q);
+      if (nextBtn) nextBtn.disabled = false;
+    });
+  });
+
+  // ── CHOICE BUTTONS ──
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = btn.dataset.q;
+      const val = btn.dataset.val;
+
+      btn.closest('.choices').querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.answers['q' + q] = val;
+
+      const nextBtn = document.getElementById('nextStep' + q);
+      if (nextBtn) nextBtn.disabled = false;
+    });
+  });
+
+  // ── NEXT BUTTONS (steps 1–7) ──
+  for (let i = 1; i <= 7; i++) {
+    const btn = document.getElementById('nextStep' + i);
+    if (btn) btn.addEventListener('click', () => goTo(i + 1));
+  }
+
+  // ── BACK BUTTONS ──
+  document.querySelectorAll('.btn-back[data-prev]').forEach(btn => {
+    btn.addEventListener('click', () => goTo(parseInt(btn.dataset.prev)));
+  });
+
+  // ── FINAL SUBMIT (step 8) ──
+  document.getElementById('nextStep8').addEventListener('click', () => {
+    if (!state.answers.q8) return;
+
+    // Calculate score (q1–q5, each yes = 20 pts)
+    let score = 0;
+    for (let i = 1; i <= 5; i++) {
+      if (state.answers['q' + i] === 'yes') score += 20;
+    }
+
+    // Qualification logic:
+    // Qualified = score <= 60 AND turnover is NOT pre-revenue
+    // (Low score = they DON'T know their numbers = they NEED this service)
+    const turnover = state.answers.q6;
+    const isQualified = score <= 60 && turnover !== 'pre-revenue';
+
+    // Store in sessionStorage for results page
+    sessionStorage.setItem('kyn_name', state.name);
+    sessionStorage.setItem('kyn_email', state.email);
+    sessionStorage.setItem('kyn_phone', state.phone);
+    sessionStorage.setItem('kyn_score', score);
+    sessionStorage.setItem('kyn_qualified', isQualified ? 'true' : 'false');
+    sessionStorage.setItem('kyn_answers', JSON.stringify(state.answers));
+
+    window.location.href = 'results.html';
+  });
+
+  // ── INIT ──
+  updateProgress();
+</script>
+</body>
+</html>

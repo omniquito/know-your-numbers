@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Results | Know Your Numbers!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0D1B2A;
+      --gold: #C8A84B;
+      --gold-light: #E2C472;
+      --cream: #F7F4EE;
+      --cream-dark: #EDE9E0;
+      --text: #0D1B2A;
+      --text-muted: #5A6A7A;
+      --white: #FFFFFF;
+      --green: #1A6B4A;
+      --green-light: #EAF5EF;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+    }
+
+    /* ── HEADER ── */
+    .results-header {
+      background: var(--navy);
+      padding: 20px 40px;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garant', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .logo span { color: var(--white); font-weight: 400; font-style: italic; }
+
+    /* ── HERO RESULT ── */
+    .result-hero {
+      background: var(--navy);
+      padding: 80px 40px 100px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0; right: 0;
+      height: 60px;
+      background: var(--cream);
+      clip-path: ellipse(55% 100% at 50% 100%);
+    }
+
+    .result-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.1s forwards;
+    }
+
+    /* ── SCORE DIAL ── */
+    .score-dial-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 36px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.25s forwards;
+    }
+
+    .score-dial {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: conic-gradient(var(--gold) 0deg, var(--gold) var(--score-deg, 0deg), rgba(255,255,255,0.08) var(--score-deg, 0deg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .score-dial-inner {
+      width: 124px;
+      height: 124px;
+      border-radius: 50%;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-number {
+      font-family: 'Cormorant Garant', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .score-max {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    .score-band {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 100px;
+      border: 1px solid;
+    }
+
+    .result-title {
+      font-family: 'Cormorant Garant', serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      max-width: 640px;
+      margin: 0 auto 16px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.4s forwards;
+    }
+
+    .result-title em { color: var(--gold-light); font-style: italic; }
+
+    .result-subtitle {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.6);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.55s forwards;
+    }
+
+    /* ── INSIGHTS ── */
+    .insights-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 80px 40px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garant', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+      margin-bottom: 40px;
+      line-height: 1.15;
+    }
+
+    .section-title em { font-style: italic; }
+
+    .insight-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .insight-item {
+      background: var(--white);
+      border: 1px solid var(--cream-dark);
+      padding: 28px 32px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .insight-num {
+      font-family: 'Cormorant Garant', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--cream-dark);
+      line-height: 1;
+      flex-shrink: 0;
+      width: 40px;
+      text-align: right;
+    }
+
+    .insight-content {}
+
+    .insight-title {
+      font-family: 'Cormorant Garant', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .insight-text {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      padding: 0 40px 80px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* QUALIFIED CTA */
+    .cta-qualified {
+      background: var(--navy);
+      padding: 56px 52px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-qualified::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+
+    .cta-qualified::after {
+      content: '★';
+      position: absolute;
+      right: -20px;
+      top: -30px;
+      font-size: 20rem;
+      color: rgba(200,168,75,0.04);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .waitlist-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(200,168,75,0.12);
+      border: 1px solid rgba(200,168,75,0.3);
+      color: var(--gold-light);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .waitlist-badge::before { content: '●'; font-size: 0.5rem; }
+
+    .cta-qualified .cta-title {
+      font-family: 'Cormorant Garant', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+
+    .cta-qualified .cta-title em { color: var(--gold-light); font-style: italic; }
+
+    .cta-qualified .cta-desc {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+
+    .cta-qualified .cta-desc strong { color: rgba(255,255,255,0.9); }
+
+    .promise-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .promise-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .promise-item::before {
+      content: '✓';
+      color: var(--gold);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* FORM */
+    .waitlist-form-msg { display: none; }
+
+    .waitlist-form .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .waitlist-form input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .waitlist-form input::placeholder { color: rgba(255,255,255,0.3); }
+    .waitlist-form input:focus { border-color: var(--gold); }
+
+    .btn-waitlist {
+      width: 100%;
+      padding: 16px;
+      background: var(--gold);
+      color: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 12px;
+    }
+
+    .btn-waitlist:hover { background: var(--gold-light); }
+
+    .form-small {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 12px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* NOT QUALIFIED CTA */
+    .cta-not-qualified {
+      background: var(--white);
+      border: 1px solid var(--cream-dark);
+      padding: 56px 52px;
+      position: relative;
+    }
+
+    .cta-not-qualified::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--cream-dark);
+    }
+
+    .cta-not-qualified .cta-title {
+      font-family: 'Cormorant Garant', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+
+    .cta-not-qualified .cta-title em { font-style: italic; }
+
+    .cta-not-qualified .cta-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      max-width: 500px;
+      margin-bottom: 36px;
+    }
+
+    .update-form .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .update-form input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--cream);
+      border: 2px solid var(--cream-dark);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .update-form input:focus { border-color: var(--gold); background: var(--white); }
+
+    .btn-update {
+      width: 100%;
+      padding: 16px;
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 12px;
+    }
+
+    .btn-update:hover { background: var(--gold); color: var(--navy); }
+
+    .update-form-msg { display: none; }
+
+    /* ── SUCCESS STATES ── */
+    .success-msg {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .success-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .success-msg h3 {
+      font-family: 'Cormorant Garant', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .success-msg p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    .success-msg.light h3 { color: var(--white); }
+    .success-msg.light p { color: rgba(255,255,255,0.6); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      padding: 32px 40px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 40px;
+    }
+
+    footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+      .results-header { padding: 16px 24px; }
+      .result-hero { padding: 60px 24px 80px; }
+      .insights-section { padding: 60px 24px; }
+      .cta-section { padding: 0 24px 60px; }
+      .cta-qualified, .cta-not-qualified { padding: 36px 28px; }
+      .waitlist-form .form-row,
+      .update-form .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="results-header">
+    <div class="logo">Know Your Numbers<span>!</span></div>
+  </header>
+
+  <!-- HERO RESULT (populated by JS) -->
+  <div class="result-hero" id="resultHero">
+    <div class="result-eyebrow" id="resultEyebrow">Your Results</div>
+    <div class="score-dial-wrap">
+      <div class="score-dial" id="scoreDial">
+        <div class="score-dial-inner">
+          <div class="score-number" id="scoreNumber">0</div>
+          <div class="score-max">out of 100</div>
+        </div>
+      </div>
+      <div class="score-band" id="scoreBand"></div>
+    </div>
+    <h1 class="result-title" id="resultTitle"></h1>
+    <p class="result-subtitle" id="resultSubtitle"></p>
+  </div>
+
+  <!-- INSIGHTS -->
+  <section class="insights-section">
+    <div class="section-label">What this means for you</div>
+    <h2 class="section-title" id="insightsTitle"></h2>
+    <div class="insight-list" id="insightList"></div>
+  </section>
+
+  <!-- NEXT STEPS / CTA -->
+  <section class="cta-section" id="ctaSection"></section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Know Your Numbers! &nbsp;·&nbsp; <a href="/cdn-cgi/l/email-protection#f29a979e9e9db2999c9d858b9d87809c879f90978081dc919ddc8799"><span class="__cf_email__" data-cfemail="ef878a838380af8481809896809a9d819a828d8a9d9cc18c80c19a84">[email&#160;protected]</span></a> &nbsp;·&nbsp; Your data is safe, never sold, never shared.</p>
+  </footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── READ SESSION DATA ──
+  const name     = sessionStorage.getItem('kyn_name') || 'there';
+  const email    = sessionStorage.getItem('kyn_email') || '';
+  const phone    = sessionStorage.getItem('kyn_phone') || '';
+  const score    = parseInt(sessionStorage.getItem('kyn_score') || '0');
+  const qualified = sessionStorage.getItem('kyn_qualified') === 'true';
+  const answers  = JSON.parse(sessionStorage.getItem('kyn_answers') || '{}');
+  const firstName = name.split(' ')[0];
+
+  // Fallback if someone lands directly
+  if (!sessionStorage.getItem('kyn_email')) {
+    window.location.href = 'quiz.html';
+  }
+
+  // ── SCORE DIAL ANIMATION ──
+  const dial = document.getElementById('scoreDial');
+  const scoreEl = document.getElementById('scoreNumber');
+  let current = 0;
+  const target = score;
+  const interval = setInterval(() => {
+    current = Math.min(current + 2, target);
+    scoreEl.textContent = current;
+    dial.style.setProperty('--score-deg', (current / 100 * 360) + 'deg');
+    if (current >= target) clearInterval(interval);
+  }, 20);
+
+  // ── CONTENT BASED ON SCORE + QUALIFICATION ──
+
+  // Score band
+  let bandLabel, bandColor;
+  if (score >= 80) {
+    bandLabel = 'Strong Foundations';
+    bandColor = 'rgba(26,107,74,0.8)';
+  } else if (score >= 40) {
+    bandLabel = 'Some Blind Spots';
+    bandColor = 'rgba(200,168,75,0.8)';
+  } else {
+    bandLabel = 'Flying Blind';
+    bandColor = 'rgba(192,57,43,0.7)';
+  }
+
+  const bandEl = document.getElementById('scoreBand');
+  bandEl.textContent = bandLabel;
+  bandEl.style.color = bandColor;
+  bandEl.style.borderColor = bandColor;
+
+  // ── RESULT COPY ──
+  const resultCopy = {
+    high: { // score 80–100
+      title: `${firstName}, you know more than <em>most.</em>`,
+      subtitle: "Your financial awareness is genuinely strong — but that doesn't mean there's nothing left to do. The gap between knowing your numbers and acting on them is where profit gets lost.",
+      insightsTitle: `Three things your score is <em>actually telling you</em>`,
+      insights: [
+        { title: "Awareness isn't the same as action", text: "Knowing your numbers is step one. The owners who grow fastest are the ones who then build a monthly habit of reviewing and responding to what those numbers reveal. Do you have that habit in place?" },
+        { title: "Your accountant is probably behind the curve", text: "Even with strong personal awareness, most accountants are looking backwards — reporting on what happened, not advising on what to do next. There's a gap between knowing and being guided." },
+        { title: "You're in a minority", text: "The fact you could answer most of these questions means you're already ahead of the majority of business owners at your level. The question is: what do you do with that advantage?" }
+      ]
+    },
+    mid: { // score 40–60
+      title: `${firstName}, there are <em>real gaps</em> here.`,
+      subtitle: "You have some financial awareness — but there are clear blind spots that are almost certainly costing you money right now. The good news is they're fixable, quickly.",
+      insightsTitle: `What your score is <em>really telling you</em>`,
+      insights: [
+        { title: "You're running on partial information", text: "A business owner making decisions without complete financial clarity is like driving with a foggy windscreen. You can move forward — but you're taking unnecessary risks you may not even be aware of." },
+        { title: "The P&L is trying to tell you something", text: "Your Profit & Loss statement contains a month's worth of insights about what's working and what isn't. But if it's sitting unread — or read without being understood — that information goes to waste every single month." },
+        { title: "Your accountant isn't filling this gap", text: "The fact that your accountant hasn't walked you through what your numbers mean isn't unusual — it's the norm. Compliance work (VAT, payroll, year end) is what they're paid for. Financial clarity for decision-making? That's a different service entirely." }
+      ]
+    },
+    low: { // score 0–20
+      title: `${firstName}, this is <em>the gap</em> we built this for.`,
+      subtitle: "You're running a business without a clear picture of its financial health. That's not a reflection on you — it's an incredibly common situation. But it's also one of the most important things to fix.",
+      insightsTitle: `Three things you need to <em>know right now</em>`,
+      insights: [
+        { title: "Not knowing your numbers is a risk, not just a gap", text: "Research consistently shows that poor financial visibility is one of the leading causes of business failure — not bad products, not bad marketing. Owners who don't know their numbers are the last to see trouble coming and the last to spot an opportunity." },
+        { title: "Your accountant isn't the solution to this", text: "Your accountant is doing their job — filing returns, handling compliance, keeping HMRC happy. But explaining what your Profit & Loss means in plain English, and telling you what to do about it? That's not what they're set up to do." },
+        { title: "This is completely fixable", text: "Financial clarity doesn't require a degree in accounting. It requires someone to translate the numbers into plain English, highlight what matters, and give you two or three things to focus on. That's exactly what Know Your Numbers! is being built to do." }
+      ]
+    }
+  };
+
+  const copy = score >= 80 ? resultCopy.high : score >= 40 ? resultCopy.mid : resultCopy.low;
+
+  document.getElementById('resultTitle').innerHTML = copy.title;
+  document.getElementById('resultSubtitle').textContent = copy.subtitle.replace(/<[^>]+>/g, '');
+  document.getElementById('resultSubtitle').innerHTML = copy.subtitle;
+  document.getElementById('insightsTitle').innerHTML = copy.insightsTitle;
+
+  const insightList = document.getElementById('insightList');
+  copy.insights.forEach((ins, i) => {
+    insightList.innerHTML += `
+      <div class="insight-item">
+        <div class="insight-num">0${i+1}</div>
+        <div class="insight-content">
+          <div class="insight-title">${ins.title}</div>
+          <p class="insight-text">${ins.text}</p>
+        </div>
+      </div>`;
+  });
+
+  // ── CTA SECTION ──
+  const ctaSection = document.getElementById('ctaSection');
+
+  if (qualified) {
+    // ─ QUALIFIED: Pre-sale waitlist ─
+    ctaSection.innerHTML = `
+      <div class="cta-qualified">
+        <div class="waitlist-badge">Limited availability · Pre-sale list</div>
+        <h2 class="cta-title">You're exactly who<br><em>we built this for.</em></h2>
+        <p class="cta-desc">
+          Know Your Numbers! is launching soon — a service that takes your P&L each month,
+          analyses it with expert-level financial intelligence, and delivers a plain-English
+          report with your two key focus points for the following month.
+          <strong>We're building a small pre-sale list of the right people. No payment required. No obligation. Just first access.</strong>
+        </p>
+        <div class="promise-list">
+          <div class="promise-item">First access when we go live — ahead of the public</div>
+          <div class="promise-item">No fee, no payment details, zero obligation</div>
+          <div class="promise-item">Your details will never be sold or shared</div>
+          <div class="promise-item">At most one update per month — we respect your inbox</div>
+        </div>
+        <div class="waitlist-form" id="waitlistForm">
+          <div class="form-row">
+            <input type="text" id="wlName" placeholder="Your name" value="${name}" />
+            <input type="email" id="wlEmail" placeholder="Email address" value="${email}" />
+          </div>
+          <button class="btn-waitlist" id="btnWaitlist">Reserve My Place on the Pre-Sale List →</button>
+          <p class="form-small">No payment. No obligation. Just your spot secured.</p>
+        </div>
+        <div class="waitlist-form-msg success-msg light" id="waitlistSuccess">
+          <div class="success-icon">🎉</div>
+          <h3>You're on the list, ${firstName}.</h3>
+          <p>We'll be in touch when we're ready to open the doors — you'll be first to know. Watch your inbox.</p>
+        </div>
+      </div>`;
+
+    document.getElementById('btnWaitlist').addEventListener('click', async () => {
+      const wlName = document.getElementById('wlName').value.trim();
+      const wlEmail = document.getElementById('wlEmail').value.trim();
+      if (!wlName || !wlEmail) return;
+
+      const btn = document.getElementById('btnWaitlist');
+      btn.textContent = 'Saving your place…';
+      btn.disabled = true;
+
+      // ── GOOGLE SHEETS SUBMISSION ──
+      // Replace YOUR_APPS_SCRIPT_URL with the URL from your Apps Script deployment
+      try {
+        await fetch('YOUR_APPS_SCRIPT_URL', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'WAITLIST',
+            name: wlName,
+            email: wlEmail,
+            phone: phone,
+            score: score,
+            turnover: answers.q6 || '',
+            desired_outcome: answers.q7 || '',
+            preferred_solution: answers.q8 || '',
+            q1_net_profit: answers.q1 || '',
+            q2_reviews_pl: answers.q2 || '',
+            q3_profit_cashflow: answers.q3 || '',
+            q4_knows_expenses: answers.q4 || '',
+            q5_accountant_explained: answers.q5 || ''
+          })
+        });
+      } catch(e) {
+        // Form submission failed silently — still show success to user
+        console.warn('Form submission error:', e);
+      }
+
+      document.getElementById('waitlistForm').style.display = 'none';
+      document.getElementById('waitlistSuccess').style.display = 'block';
+    });
+
+  } else {
+    // ─ NOT QUALIFIED: Keep updated list ─
+    const notQualReason = score > 60
+      ? "you already have a solid grasp of your numbers"
+      : "you're at the very start of your business journey";
+
+    ctaSection.innerHTML = `
+      <div class="cta-not-qualified">
+        <h2 class="cta-title">Not quite the right fit <em>right now</em> — but that's okay.</h2>
+        <p class="cta-desc">
+          Based on your answers, it looks like ${notQualReason} — which means our current service
+          isn't the most useful thing for you at this moment. That may well change.
+          <br><br>
+          We'd love to keep you in the loop as we build out more tools and resources.
+          Sign up below and we'll share genuinely useful content as it becomes available — no more than once a month, ever.
+        </p>
+        <div class="update-form" id="updateForm">
+          <div class="form-row">
+            <input type="text" id="ulName" placeholder="Your name" value="${name}" />
+            <input type="email" id="ulEmail" placeholder="Email address" value="${email}" />
+          </div>
+          <button class="btn-update" id="btnUpdate">Keep Me Updated →</button>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-top:12px;text-align:center;line-height:1.5;">
+            Your details are completely safe. Never sold, never shared. Maximum one email per month.
+          </p>
+        </div>
+        <div class="update-form-msg success-msg" id="updateSuccess">
+          <div class="success-icon">✓</div>
+          <h3>You're on the list, ${firstName}.</h3>
+          <p>We'll be in touch occasionally with useful content. Nothing pushy — just things we genuinely think will help.</p>
+        </div>
+      </div>`;
+
+    document.getElementById('btnUpdate').addEventListener('click', async () => {
+      const ulName = document.getElementById('ulName').value.trim();
+      const ulEmail = document.getElementById('ulEmail').value.trim();
+      if (!ulName || !ulEmail) return;
+
+      const btn = document.getElementById('btnUpdate');
+      btn.textContent = 'Adding you to the list…';
+      btn.disabled = true;
+
+      // ── GOOGLE SHEETS SUBMISSION ──
+      // Same URL as above — the 'type' field distinguishes the two lists
+      try {
+        await fetch('YOUR_APPS_SCRIPT_URL', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'KEEP_UPDATED',
+            name: ulName,
+            email: ulEmail,
+            phone: phone,
+            score: score,
+            not_qualified_reason: notQualReason,
+            turnover: answers.q6 || '',
+            desired_outcome: answers.q7 || '',
+            preferred_solution: answers.q8 || ''
+          })
+        })
