@@ -303,7 +303,8 @@
       try {
         await fetch(SHEET_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ type: 'WAITLIST', name: n, email: e, score, turnover: answers.q6 || '', desired_outcome: answers.q7 || '', preferred_solution: answers.q8 || '', q1_net_profit: answers.q1 || '', q2_reviews_pl: answers.q2 || '', q3_profit_cashflow: answers.q3 || '', q4_knows_expenses: answers.q4 || '', q5_accountant_explained: answers.q5 || '' })
         });
       } catch(err) { console.warn('Submission error', err); }
@@ -347,7 +348,8 @@
       try {
         await fetch(SHEET_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ type: 'KEEP_UPDATED', name: n, email: e, score, not_qualified_reason: reason, turnover: answers.q6 || '', desired_outcome: answers.q7 || '', preferred_solution: answers.q8 || '' })
         });
       } catch(err) { console.warn('Submission error', err); }
