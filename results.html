@@ -686,7 +686,7 @@
       // ── GOOGLE SHEETS SUBMISSION ──
       // Replace YOUR_APPS_SCRIPT_URL with the URL from your Apps Script deployment
       try {
-        await fetch('YOUR_APPS_SCRIPT_URL', {
+        await fetch('https://script.google.com/macros/s/AKfycby_kjKFPq9471V9gOfkL2NQRjDEL2-40OE5TakPa-5ehl8DYcbMQT4jfvuTRygpVQG8IQ/exec', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -759,7 +759,7 @@
       // ── GOOGLE SHEETS SUBMISSION ──
       // Same URL as above — the 'type' field distinguishes the two lists
       try {
-        await fetch('YOUR_APPS_SCRIPT_URL', {
+        await fetch('https://script.google.com/macros/s/AKfycby_kjKFPq9471V9gOfkL2NQRjDEL2-40OE5TakPa-5ehl8DYcbMQT4jfvuTRygpVQG8IQ/exec', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
